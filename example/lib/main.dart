@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -8,6 +10,52 @@ import 'data.dart';
 void main() {
   runApp(MyApp());
 }
+
+enum ParameterItems {
+  elevation("elevation", null),
+  feetPose("feetpose", 12),
+  pathwidth("pathwidth", 13);
+
+  const ParameterItems(this.label, this.value);
+  final String label;
+  final int? value;
+
+  static final List<ParameterEntry> entries =
+      UnmodifiableListView<ParameterEntry>(
+    values.map<ParameterEntry>(
+      (ParameterItems item) => ParameterEntry(value: item, label: item.label),
+    ),
+  );
+
+  Map<int, Color> get colorMap {
+    switch (this) {
+      case ParameterItems.elevation:
+        return ElevationGradientColors(
+                gt10: Colors.green,
+                gt20: Colors.orangeAccent,
+                gt30: Colors.redAccent)
+            .toMap();
+      case ParameterItems.feetPose:
+        return {
+          0: Colors.grey,
+          1: Colors.blue,
+          2: Colors.green,
+          3: Colors.orange,
+          4: Colors.red
+        };
+      case ParameterItems.pathwidth:
+        return {
+          0: Colors.grey,
+          1: Colors.green,
+          2: Colors.yellow,
+          3: Colors.orange,
+          4: Colors.red
+        };
+    }
+  }
+}
+
+typedef ParameterEntry = DropdownMenuEntry<ParameterItems>;
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -59,15 +107,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ElevationPoint? hoverPoint;
+  ParameterItems colorParameter = ParameterItems.elevation;
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -114,27 +157,49 @@ class _MyHomePageState extends State<MyHomePage> {
           bottom: 0,
           left: 0,
           right: 0,
-          height: 120,
+          height: 200,
           child: Container(
-            color: Colors.white.withOpacity(0.6),
-            child: NotificationListener<ElevationHoverNotification>(
-                onNotification: (ElevationHoverNotification notification) {
-                  setState(() {
-                    hoverPoint = notification.position!;
-                  });
+            color: Colors.white.withValues(alpha: 0.6),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownMenu<ParameterItems>(
+                    inputDecorationTheme: InputDecorationTheme(
+                        filled: true, fillColor: Colors.white),
+                    menuStyle: MenuStyle(
+                        backgroundColor: WidgetStateProperty.all(Colors.white)),
+                    initialSelection: ParameterItems.elevation,
+                    dropdownMenuEntries: ParameterItems.entries,
+                    onSelected: ((ParameterItems? parameter) {
+                      setState(() {
+                        colorParameter = parameter!;
+                      });
+                    }),
+                  ),
+                ),
+                SizedBox(
+                  height: 120,
+                  width: MediaQuery.of(context).size.width,
+                  child: NotificationListener<ElevationHoverNotification>(
+                      onNotification:
+                          (ElevationHoverNotification notification) {
+                        setState(() {
+                          hoverPoint = notification.position!;
+                        });
 
-                  return true;
-                },
-                child: Elevation(
-                  getPoints(),
-                  color: Colors.grey,
-                  elevationGradientColors: ElevationGradientColors(
-                      gt10: Colors.green,
-                      gt20: Colors.orangeAccent,
-                      gt30: Colors.redAccent),
-                )),
+                        return true;
+                      },
+                      child: Elevation(
+                          parameter: colorParameter.value,
+                          getPoints(),
+                          color: Color(0xFF172033),
+                          parametersColors: colorParameter.colorMap)),
+                ),
+              ],
+            ),
           ),
-        )
+        ),
       ]),
     );
   }

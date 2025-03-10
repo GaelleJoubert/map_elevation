@@ -10,6 +10,7 @@ A widget to display elevation of a track (polyline)
 - Draw elevation graph
 - Dispatch a notification with hover point on graph
 - Add colors for high elevation gradients
+- Add colors depending on parameters associated to POI.
 - Ability to add child over graph
 
 ## Getting Started
@@ -26,10 +27,11 @@ NotificationListener<ElevationHoverNotification>(
     child: Elevation(
       getElevationPoints(),
       color: Colors.grey,
+      parameter: colorParameter.value,
       elevationGradientColors: ElevationGradientColors(
           gt10: Colors.green,
           gt20: Colors.orangeAccent,
-          gt30: Colors.redAccent),
+          gt30: Colors.redAccent).toMap(),
     )
 )
 ```

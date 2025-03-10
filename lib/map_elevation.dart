@@ -4,27 +4,29 @@ import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:latlong2/latlong.dart' as lg;
 
 /// Elevation statefull widget
 class Elevation extends StatefulWidget {
   /// List of points to draw on elevation widget
   /// Lat and Long are required to emit notification on hover
+  /// A Parameter arguments can be added to color the graph
   final List<ElevationPoint> points;
 
   /// Background color of the elevation graph
   final Color? color;
 
-  /// Elevation gradient colors
-  /// See [ElevationGradientColors] for more details
-  final ElevationGradientColors? elevationGradientColors;
+  /// Map of of the values the parameter can take and the color associated
+  final Map<int, Color>? parametersColors;
+
+  ///The parameter used to color the graph, if null, it means the elevation is used to color the graph
+  final int? parameter;
 
   /// [WidgetBuilder] like Function to add child over the graph
   final Function(BuildContext context, Size size)? child;
 
   Elevation(this.points,
-      {this.color, this.elevationGradientColors, this.child});
+      {this.color, this.parametersColors, this.child, this.parameter});
 
   @override
   State<StatefulWidget> createState() => _ElevationState();
@@ -40,8 +42,10 @@ class _ElevationState extends State<Elevation> {
       Offset _lbPadding = Offset(35, 6);
       _ElevationPainter elevationPainter = _ElevationPainter(widget.points,
           paintColor: widget.color ?? Colors.transparent,
-          elevationGradientColors: widget.elevationGradientColors,
+          parameter: widget.parameter,
+          parametersColors: widget.parametersColors,
           lbPadding: _lbPadding);
+
       return GestureDetector(
           onHorizontalDragUpdate: (DragUpdateDetails details) {
             final pointFromPosition = elevationPainter
@@ -109,12 +113,14 @@ class _ElevationPainter extends CustomPainter {
   Offset lbPadding;
   late int _min, _max;
   late double widthOffset;
-  ElevationGradientColors? elevationGradientColors;
+  Map<int, Color>? parametersColors;
+  int? parameter;
 
   _ElevationPainter(this.points,
       {required this.paintColor,
       this.lbPadding = Offset.zero,
-      this.elevationGradientColors}) {
+      this.parametersColors,
+      this.parameter}) {
     _min = (points.map((point) => point.altitude).toList().reduce(min) / 100)
             .floor() *
         100;
@@ -145,24 +151,53 @@ class _ElevationPainter extends CustomPainter {
       ..blendMode = BlendMode.src
       ..style = PaintingStyle.stroke;
 
-    if (elevationGradientColors != null) {
+    if (parametersColors != null && parameter == null) {
       List<Color> gradientColors = [paintColor];
+
       for (int i = 1; i < points.length; i++) {
         double dX = lg.Distance().distance(points[i], points[i - 1]);
         double dZ = (points[i].altitude - points[i - 1].altitude);
 
         double gradient = 100 * dZ / dX;
         if (gradient > 30) {
-          gradientColors.add(elevationGradientColors!.gt30);
+          gradientColors.add(parametersColors![30]!);
         } else if (gradient > 20) {
-          gradientColors.add(elevationGradientColors!.gt20);
+          gradientColors.add(parametersColors![20]!);
         } else if (gradient > 10) {
-          gradientColors.add(elevationGradientColors!.gt10);
+          gradientColors.add(parametersColors![10]!);
         } else {
           gradientColors.add(paintColor);
         }
       }
 
+      paint.shader = ui.Gradient.linear(
+          Offset(lbPadding.dx, 0),
+          Offset(size.width, 0),
+          gradientColors,
+          _calculateColorsStop(gradientColors));
+    }
+
+    if (parametersColors != null && parameter != null) {
+      List<Color> gradientColors = [paintColor];
+      Color? colorTypeSet;
+      for (int i = 1; i < points.length; i++) {
+        // Check if the point has the wanted parameter type
+        if (points[i].parameters.isNotEmpty) {
+          if (points[i].parameters["type"] == parameter) {
+            //we get the correct color according to the subtype
+            gradientColors
+                .add(parametersColors![points[i].parameters["sub_type"]]!);
+            //save color for the next points
+            colorTypeSet = parametersColors![points[i].parameters["sub_type"]];
+          } else {
+            //If the type don't match the wanted parameter, we use the last color set
+            gradientColors.add(colorTypeSet ?? paintColor);
+          }
+        } else {
+          //If the point has no type, we use the last color set (if it has been set
+          gradientColors.add(colorTypeSet ?? paintColor);
+        }
+      }
       paint.shader = ui.Gradient.linear(
           Offset(lbPadding.dx, 0),
           Offset(size.width, 0),
@@ -253,6 +288,10 @@ class ElevationGradientColors {
 
   ElevationGradientColors(
       {required this.gt10, required this.gt20, required this.gt30});
+
+  Map<int, Color> toMap() {
+    return {10: gt10, 20: gt20, 30: gt30};
+  }
 }
 
 /// Geographic point with elevation
@@ -260,7 +299,11 @@ class ElevationPoint extends lg.LatLng {
   /// Altitude (in meters)
   double altitude;
 
-  ElevationPoint(double latitude, double longitude, this.altitude)
+  /// Map of Parameters associated to the point
+  Map<String, int> parameters;
+
+  ElevationPoint(double latitude, double longitude, this.altitude,
+      {this.parameters = const {}})
       : super(latitude, longitude);
 
   lg.LatLng get latLng => this;
