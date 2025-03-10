@@ -31,13 +31,16 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'map_elevation demo'),
+      home: MyHomePage(
+        title: 'map_elevation demo',
+        key: null,
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({required this.title, super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -55,7 +58,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  ElevationPoint hoverPoint;
+  ElevationPoint? hoverPoint;
 
   @override
   Widget build(BuildContext context) {
@@ -74,15 +77,15 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(children: [
         FlutterMap(
           options: new MapOptions(
-            center: LatLng(45.10, 5.48),
-            zoom: 11.0,
+            initialCenter: LatLng(45.10, 5.48),
+            initialZoom: 11.0,
           ),
-          layers: [
-            TileLayerOptions(
+          children: [
+            TileLayer(
               urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
               subdomains: ['a', 'b', 'c'],
             ),
-            PolylineLayerOptions(
+            PolylineLayer(
               // Will only render visible polylines, increasing performance
               polylines: [
                 Polyline(
@@ -93,17 +96,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            MarkerLayerOptions(markers: [
+            MarkerLayer(markers: [
               if (hoverPoint != null)
                 Marker(
-                    point: hoverPoint.latLng,
+                    point: hoverPoint!.latLng,
                     width: 8,
                     height: 8,
-                    builder: (BuildContext context) => Container(
-                          decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(8)),
-                        ))
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(8)),
+                    ))
             ]),
           ],
         ),
@@ -117,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: NotificationListener<ElevationHoverNotification>(
                 onNotification: (ElevationHoverNotification notification) {
                   setState(() {
-                    hoverPoint = notification.position;
+                    hoverPoint = notification.position!;
                   });
 
                   return true;
