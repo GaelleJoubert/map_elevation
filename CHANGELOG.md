@@ -5,6 +5,8 @@
 * **New Feature**  You can color the graph based on other parameter than just the elevation
 * `ElevationPoint` has a field `parameters` that can be used to store additional data
 * New parameter `parameterUsedToColor` to select the parameter used for coloring the graph
+* **New Feature**  You display a legend Widget
+* **New Feature**  You can compute the percentage of the graph that is above a certain value (for elevation and other parameters)
 
 * **Breaking:** 
 * the parameter `elevationGradientColors` is now a `parameterValuesAndColorsMap`

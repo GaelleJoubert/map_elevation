@@ -156,6 +156,9 @@ class _MyHomePageState extends State<MyHomePage> {
           points: getPoints(),
           parameter: colorParameter.value!,
           parameterValues: colorParameter.subTypes);
+    } else {
+      secondLegendList =
+          getElevationDistributionPercentageString(points: getPoints());
     }
 
     return Scaffold(
