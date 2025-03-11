@@ -1,4 +1,18 @@
+## 3.0.0
+* Example app : Update Min SDK version to 21, migrate to Android Embedding V2
+* Update dependencies : latlong2 to 0.9.0,
+
+* **New Feature**  You can color the graph based on other parameter than just the elevation
+* `ElevationPoint` has a field `parameters` that can be used to store additional data
+* New parameter `parameterUsedToColor` to select the parameter used for coloring the graph
+
+* **Breaking:** 
+* the parameter `elevationGradientColors` is now a `parameterValuesAndColorsMap`
+* Bump Min sdk to 2.17.0
+
+
 ## 2.0.0
+
 
 * Null safety
 * **Breaking:** `Elevation.color` param is now required

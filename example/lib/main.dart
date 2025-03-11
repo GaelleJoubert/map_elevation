@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -27,14 +26,26 @@ enum ParameterItems {
     ),
   );
 
-  Map<int, Color> get colorMap {
+  List<int> get subTypes {
+    switch (this) {
+      case ParameterItems.elevation:
+        return [10, 20, 30];
+      case ParameterItems.feetPose:
+        return [0, 1, 2, 3, 4];
+
+      case ParameterItems.pathwidth:
+        return [0, 1, 2, 3, 4];
+    }
+  }
+
+  Map<int, Color> get colorValueMap {
     switch (this) {
       case ParameterItems.elevation:
         return ElevationGradientColors(
                 gt10: Colors.green,
                 gt20: Colors.orangeAccent,
                 gt30: Colors.redAccent)
-            .toMap();
+            .toMapValues();
       case ParameterItems.feetPose:
         return {
           0: Colors.grey,
@@ -50,6 +61,33 @@ enum ParameterItems {
           2: Colors.yellow,
           3: Colors.orange,
           4: Colors.red
+        };
+    }
+  }
+
+  Map<String, Color> get colorLabelMap {
+    switch (this) {
+      case ParameterItems.elevation:
+        return ElevationGradientColors(
+                gt10: Colors.green,
+                gt20: Colors.orangeAccent,
+                gt30: Colors.redAccent)
+            .toMapLabel();
+      case ParameterItems.feetPose:
+        return {
+          "indéfini": Colors.grey,
+          "irrégulier": Colors.blue,
+          "régulier": Colors.green,
+          "technique": Colors.orange,
+          "très technique": Colors.red
+        };
+      case ParameterItems.pathwidth:
+        return {
+          "indéfini": Colors.grey,
+          "single": Colors.green,
+          "largeur > 50cm": Colors.yellow,
+          "large": Colors.orange,
+          "très large": Colors.red
         };
     }
   }
@@ -111,6 +149,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //get legend second  text
+    List<String> secondLegendList = [];
+    if (colorParameter != ParameterItems.elevation) {
+      secondLegendList = getParameterDistributionPercentageString(
+          points: getPoints(),
+          parameter: colorParameter.value!,
+          parameterValues: colorParameter.subTypes);
+    }
+
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -157,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
           bottom: 0,
           left: 0,
           right: 0,
-          height: 200,
+          height: 300,
           child: Container(
             color: Colors.white.withValues(alpha: 0.6),
             child: Column(
@@ -191,11 +238,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         return true;
                       },
                       child: Elevation(
-                          parameter: colorParameter.value,
+                          parameterUsedToColor: colorParameter.value,
                           getPoints(),
                           color: Color(0xFF172033),
-                          parametersColors: colorParameter.colorMap)),
+                          parameterValuesAndColorsMap:
+                              colorParameter.colorValueMap)),
                 ),
+                ElevationLegend(
+                  columns: 2,
+                  parameterLabelAndColorsMap: colorParameter.colorLabelMap,
+                  secondLegendTextList: secondLegendList,
+                )
               ],
             ),
           ),

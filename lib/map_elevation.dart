@@ -1,32 +1,43 @@
 library map_elevation;
 
+export 'elevation_legend.dart';
+export 'elevation_point.dart';
+export 'elevation_functions.dart';
+
 import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart' as lg;
 
+import 'elevation_point.dart';
+
 /// Elevation statefull widget
 class Elevation extends StatefulWidget {
   /// List of points to draw on elevation widget
   /// Lat and Long are required to emit notification on hover
-  /// A Parameter arguments can be added to color the graph
+  /// A Parameter argument can be added to color the graph, See [ElevationPoint.parameters]
   final List<ElevationPoint> points;
 
   /// Background color of the elevation graph
   final Color? color;
 
   /// Map of of the values the parameter can take and the color associated
-  final Map<int, Color>? parametersColors;
+  /// Note : If you just want to color your graph according to the elevation, you can simply pass :
+  /// ElevationGradientColors.toMap()
+  final Map<int, Color>? parameterValuesAndColorsMap;
 
-  ///The parameter used to color the graph, if null, it means the elevation is used to color the graph
-  final int? parameter;
+  ///The value of the parameter used to color the graph, if null, it means the elevation is used to color the graph
+  final int? parameterUsedToColor;
 
   /// [WidgetBuilder] like Function to add child over the graph
   final Function(BuildContext context, Size size)? child;
 
   Elevation(this.points,
-      {this.color, this.parametersColors, this.child, this.parameter});
+      {this.color,
+      this.parameterValuesAndColorsMap,
+      this.child,
+      this.parameterUsedToColor});
 
   @override
   State<StatefulWidget> createState() => _ElevationState();
@@ -42,8 +53,8 @@ class _ElevationState extends State<Elevation> {
       Offset _lbPadding = Offset(35, 6);
       _ElevationPainter elevationPainter = _ElevationPainter(widget.points,
           paintColor: widget.color ?? Colors.transparent,
-          parameter: widget.parameter,
-          parametersColors: widget.parametersColors,
+          parameter: widget.parameterUsedToColor,
+          parametersColors: widget.parameterValuesAndColorsMap,
           lbPadding: _lbPadding);
 
       return GestureDetector(
@@ -107,13 +118,20 @@ class _ElevationState extends State<Elevation> {
 }
 
 class _ElevationPainter extends CustomPainter {
+  /// List of points to draw on elevation widget
   List<ElevationPoint> points;
   late List<double> _relativeAltitudes;
+
+  /// Main color used to paint under the elevation line in the graph
   Color paintColor;
   Offset lbPadding;
   late int _min, _max;
   late double widthOffset;
+
+  /// Map of of the values the parameter can take and the color associated
   Map<int, Color>? parametersColors;
+
+  /// The parameter chosen to color the graph, if null, it means the elevation is used to color the graph
   int? parameter;
 
   _ElevationPainter(this.points,
@@ -151,6 +169,7 @@ class _ElevationPainter extends CustomPainter {
       ..blendMode = BlendMode.src
       ..style = PaintingStyle.stroke;
 
+    //Painter when elevation is used to color the graph
     if (parametersColors != null && parameter == null) {
       List<Color> gradientColors = [paintColor];
 
@@ -177,6 +196,7 @@ class _ElevationPainter extends CustomPainter {
           _calculateColorsStop(gradientColors));
     }
 
+    //Painter when a parameter is used to color the graph
     if (parametersColors != null && parameter != null) {
       List<Color> gradientColors = [paintColor];
       Color? colorTypeSet;
@@ -289,22 +309,11 @@ class ElevationGradientColors {
   ElevationGradientColors(
       {required this.gt10, required this.gt20, required this.gt30});
 
-  Map<int, Color> toMap() {
+  Map<int, Color> toMapValues() {
     return {10: gt10, 20: gt20, 30: gt30};
   }
-}
 
-/// Geographic point with elevation
-class ElevationPoint extends lg.LatLng {
-  /// Altitude (in meters)
-  double altitude;
-
-  /// Map of Parameters associated to the point
-  Map<String, int> parameters;
-
-  ElevationPoint(double latitude, double longitude, this.altitude,
-      {this.parameters = const {}})
-      : super(latitude, longitude);
-
-  lg.LatLng get latLng => this;
+  Map<String, Color> toMapLabel() {
+    return {">10%": gt10, ">20%": gt20, ">30%": gt30};
+  }
 }
