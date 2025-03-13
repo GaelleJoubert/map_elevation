@@ -15,8 +15,9 @@ class ElevationPoint extends lg.LatLng {
   List<Map<String, int>> parameters;
 
   ElevationPoint(double latitude, double longitude, this.altitude,
-      {this.parameters = const [{}]})
-      : super(latitude, longitude);
+      {List<Map<String, int>>? parameters})
+      : parameters = parameters ?? [{}],
+        super(latitude, longitude);
 
   lg.LatLng get latLng => this;
 }
