@@ -12,10 +12,10 @@ class ElevationPoint extends lg.LatLng {
   /// The value assoicated to "sub_type" is the value this parameter can take
   /// When calling the Elevation widget, you can pass to the "parameterUsedForDisplay" argument the value of the parameter you want to color the graph with (this value must be the same as the one in the "type" field)
 
-  Map<String, int> parameters;
+  List<Map<String, int>> parameters;
 
   ElevationPoint(double latitude, double longitude, this.altitude,
-      {this.parameters = const {}})
+      {this.parameters = const [{}]})
       : super(latitude, longitude);
 
   lg.LatLng get latLng => this;

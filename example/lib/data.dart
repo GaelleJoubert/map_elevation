@@ -14,7 +14,10 @@ List<List<dynamic>> raw = [
     5.5817,
     45.13109,
     1003,
-    {"type": 13, "sub_type": 1}
+    [
+      {"type": 13, "sub_type": 1},
+      {"type": 12, "sub_type": 4}
+    ]
   ],
   [5.58163, 45.1311, 1003],
   [5.58149, 45.13108, 1004],
@@ -52,7 +55,9 @@ List<List<dynamic>> raw = [
     5.57571,
     45.12379,
     999,
-    {"type": 13, "sub_type": 4}
+    [
+      {"type": 13, "sub_type": 4}
+    ]
   ],
   [5.57416, 45.12181, 999],
   [5.57391, 45.1216, 1002],
@@ -73,7 +78,9 @@ List<List<dynamic>> raw = [
     5.57246,
     45.11574,
     1007,
-    {"type": 12, "sub_type": 1}
+    [
+      {"type": 12, "sub_type": 1}
+    ]
   ],
   [5.57277, 45.11439, 1003],
   [5.57277, 45.11419, 1003],
@@ -160,7 +167,9 @@ List<List<dynamic>> raw = [
     5.55237,
     45.07765,
     976,
-    {"type": 13, "sub_type": 1}
+    [
+      {"type": 13, "sub_type": 1}
+    ]
   ],
   [5.55172, 45.0773, 979],
   [5.55141, 45.07711, 979],
@@ -216,7 +225,10 @@ List<List<dynamic>> raw = [
     5.54034,
     45.07323,
     955,
-    {"type": 13, "sub_type": 2}
+    [
+      {"type": 13, "sub_type": 2},
+      {"type": 12, "sub_type": 4}
+    ]
   ],
   [5.54022, 45.0733, 952],
   [5.53929, 45.07457, 952],
@@ -303,7 +315,9 @@ List<List<dynamic>> raw = [
     5.52114,
     45.07715,
     978,
-    {"type": 13, "sub_type": 3}
+    [
+      {"type": 13, "sub_type": 3}
+    ]
   ],
   [5.52125, 45.07669, 979],
   [5.52134, 45.07645, 972],
@@ -461,7 +475,9 @@ List<List<dynamic>> raw = [
     5.47415,
     45.08765,
     667,
-    {"type": 13, "sub_type": 1}
+    [
+      {"type": 13, "sub_type": 1}
+    ]
   ],
   [5.47382, 45.08773, 665],
   [5.47369, 45.08779, 665],
@@ -489,7 +505,9 @@ List<List<dynamic>> raw = [
     5.47053,
     45.09313,
     704,
-    {"type": 12, "sub_type": 2}
+    [
+      {"type": 12, "sub_type": 2}
+    ]
   ],
   [5.47071, 45.09323, 703],
   [5.47112, 45.09341, 705],
@@ -720,7 +738,9 @@ List<List<dynamic>> raw = [
     5.47861,
     45.13912,
     1050,
-    {"type": 13, "sub_type": 4}
+    [
+      {"type": 13, "sub_type": 4}
+    ]
   ],
   [5.47876, 45.13986, 1055],
   [5.47872, 45.14013, 1058],
@@ -969,7 +989,9 @@ List<List<dynamic>> raw = [
     5.48365,
     45.20192,
     248,
-    {"type": 12, "sub_type": 3}
+    [
+      {"type": 12, "sub_type": 3}
+    ]
   ],
   [5.48327, 45.20193, 242],
   [5.48312, 45.20199, 237],
@@ -1181,24 +1203,8 @@ List<List<dynamic>> raw = [
 
 List<ElevationPoint> getPoints() {
   List<ElevationPoint> list = raw.map((e) {
-    //Simple point without parameters
-    if (e.length == 4) {
-      //Handle the case if there is a parameters map
-      if (e[3]["type"] != null) {
-        return ElevationPoint(e[1], e[0], double.parse(e[2].toString()),
-            parameters: {
-              "type": e[3]["type"],
-              "sub_type": e[3]["sub_type"],
-            });
-      }
-    }
     return ElevationPoint(e[1], e[0], double.parse(e[2].toString()),
-        parameters: (e.length == 4)
-            ? {
-                "type": e[3]["type"],
-                "sub_type": e[3]["sub_type"],
-              }
-            : {});
+        parameters: (e.length == 4) ? e[3] : [{}]);
   }).toList();
 
   return list;

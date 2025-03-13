@@ -16,13 +16,16 @@ Map<int, double> getParameterDistributionPercentage(
   int? lastSetParameter;
   for (int i = 0; i < points.length; i++) {
     if (points[i].parameters.isNotEmpty) {
-      if (points[i].parameters["type"] == parameter) {
-        distribution[points[i].parameters["sub_type"]!] =
-            distribution[points[i].parameters["sub_type"]!]! + 1;
-        lastSetParameter = points[i].parameters["sub_type"];
-      } else {
-        if (!singlePointsCounting && lastSetParameter != null)
-          distribution[lastSetParameter] = distribution[lastSetParameter]! + 1;
+      for (int j = 0; j < points[i].parameters.length; j++) {
+        if (points[i].parameters[j]["type"] == parameter) {
+          distribution[points[i].parameters[j]["sub_type"]!] =
+              distribution[points[i].parameters[j]["sub_type"]!]! + 1;
+          lastSetParameter = points[i].parameters[j]["sub_type"];
+        } else {
+          if (!singlePointsCounting && lastSetParameter != null)
+            distribution[lastSetParameter] =
+                distribution[lastSetParameter]! + 1;
+        }
       }
     } else {
       if (!singlePointsCounting && lastSetParameter != null)

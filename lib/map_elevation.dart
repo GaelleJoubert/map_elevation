@@ -30,14 +30,37 @@ class Elevation extends StatefulWidget {
   ///The value of the parameter used to color the graph, if null, it means the elevation is used to color the graph
   final int? parameterUsedToColor;
 
+  /// Color of the scale
+  final Color? scaleColor;
+
+  /// Color of the dashed altitudes lines
+  final Color? dashedAltitudesColor;
+
+  /// Style of the scale items label
+  final TextStyle? scaleTextStyle;
+
+  /// Total distance of route
+  final num? totalDistance;
+
+  final double? progression;
+
   /// [WidgetBuilder] like Function to add child over the graph
   final Function(BuildContext context, Size size)? child;
+
+  /// Unit used to display the altitude/distance
+  // final PreferredUnit unit;
+  // final List<List<ElevationPoint>>? groupedElevationPoints;
 
   Elevation(this.points,
       {this.color,
       this.parameterValuesAndColorsMap,
       this.child,
-      this.parameterUsedToColor});
+      this.parameterUsedToColor,
+      this.scaleColor,
+      this.dashedAltitudesColor,
+      this.scaleTextStyle,
+      this.totalDistance,
+      this.progression});
 
   @override
   State<StatefulWidget> createState() => _ElevationState();
@@ -55,6 +78,10 @@ class _ElevationState extends State<Elevation> {
           paintColor: widget.color ?? Colors.transparent,
           parameter: widget.parameterUsedToColor,
           parametersColors: widget.parameterValuesAndColorsMap,
+          scaleTextStyle: widget.scaleTextStyle,
+          scaleColor: widget.scaleColor,
+          dashedAltitudesColor: widget.dashedAltitudesColor,
+          totalDistance: widget.totalDistance,
           lbPadding: _lbPadding);
 
       return GestureDetector(
@@ -124,9 +151,13 @@ class _ElevationPainter extends CustomPainter {
 
   /// Main color used to paint under the elevation line in the graph
   Color paintColor;
+  TextStyle? scaleTextStyle;
+  Color? scaleColor;
+  Color? dashedAltitudesColor;
   Offset lbPadding;
   late int _min, _max;
   late double widthOffset;
+  num? totalDistance;
 
   /// Map of of the values the parameter can take and the color associated
   Map<int, Color>? parametersColors;
@@ -134,11 +165,17 @@ class _ElevationPainter extends CustomPainter {
   /// The parameter chosen to color the graph, if null, it means the elevation is used to color the graph
   int? parameter;
 
-  _ElevationPainter(this.points,
-      {required this.paintColor,
-      this.lbPadding = Offset.zero,
-      this.parametersColors,
-      this.parameter}) {
+  _ElevationPainter(
+    this.points, {
+    required this.paintColor,
+    this.lbPadding = Offset.zero,
+    this.parametersColors,
+    this.parameter,
+    this.scaleTextStyle,
+    this.dashedAltitudesColor,
+    this.totalDistance,
+    this.scaleColor,
+  }) {
     _min = (points.map((point) => point.altitude).toList().reduce(min) / 100)
             .floor() *
         100;
@@ -203,15 +240,18 @@ class _ElevationPainter extends CustomPainter {
       for (int i = 1; i < points.length; i++) {
         // Check if the point has the wanted parameter type
         if (points[i].parameters.isNotEmpty) {
-          if (points[i].parameters["type"] == parameter) {
-            //we get the correct color according to the subtype
-            gradientColors
-                .add(parametersColors![points[i].parameters["sub_type"]]!);
-            //save color for the next points
-            colorTypeSet = parametersColors![points[i].parameters["sub_type"]];
-          } else {
-            //If the type don't match the wanted parameter, we use the last color set
-            gradientColors.add(colorTypeSet ?? paintColor);
+          for (int j = 0; j < points[i].parameters.length; j++) {
+            if (points[i].parameters[j]["type"] == parameter) {
+              //we get the correct color according to the subtype
+              gradientColors
+                  .add(parametersColors![points[i].parameters[j]["sub_type"]]!);
+              //save color for the next points
+              colorTypeSet =
+                  parametersColors![points[i].parameters[j]["sub_type"]];
+            } else {
+              //If the type don't match the wanted parameter, we use the last color set
+              gradientColors.add(colorTypeSet ?? paintColor);
+            }
           }
         } else {
           //If the point has no type, we use the last color set (if it has been set
@@ -314,6 +354,6 @@ class ElevationGradientColors {
   }
 
   Map<String, Color> toMapLabel() {
-    return {">10%": gt10, ">20%": gt20, ">30%": gt30};
+    return {"Pente > 10%": gt10, "Pente > 20%": gt20, "Pente > 30%": gt30};
   }
 }
