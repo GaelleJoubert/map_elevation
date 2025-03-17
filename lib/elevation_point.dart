@@ -34,7 +34,7 @@ class ElevationPoint extends lg.LatLng {
   }
 
   ///For a given parameter type, upgrade the sub_type value if the parameter is already present, or add it if it is not
-  bool addOrUpgradeParameter(int type, int subType) {
+  addOrUpgradeParameter(int type, int subType) {
     bool foundType = this.hasParameterType(type);
     if (!foundType) {
       this.parameters.add({"type": type, "sub_type": subType});
@@ -46,6 +46,5 @@ class ElevationPoint extends lg.LatLng {
         }
       });
     }
-    return true;
   }
 }
