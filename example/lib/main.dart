@@ -241,6 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         return true;
                       },
                       child: Elevation(
+                          totalDistance: 51000,
                           parameterUsedToColor: colorParameter.value,
                           getPoints(),
                           color: Color(0xFF172033),

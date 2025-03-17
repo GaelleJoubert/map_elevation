@@ -426,15 +426,15 @@ class _ElevationPainter extends CustomPainter {
     }
     // canvas.saveLayer(rect, Paint());
 
-    //widthOffset = (size.width - lbPadding.dx) / _relativeAltitudes.length;
-
     final scaleTextStyleOrDefault =
         scaleTextStyle ?? const TextStyle(color: Colors.black, fontSize: 10);
 
     if (withDistanceScale && totalDistance != null) {
       const minimumSpaceBetweenDistanceScaleSegmentKilometersMarks = 30;
-      final totalDistanceInCurrentLargestUnit =
-          (totalDistance!.convertFromTo(LENGTH.meters, unit) ?? 0);
+      final totalDistanceInCurrentLargestUnit = (totalDistance!.convertFromTo(
+              LENGTH.meters,
+              unit == LENGTH.meters ? LENGTH.kilometers : LENGTH.miles) ??
+          0);
       // We display the 0 so we add one segment
       final numberOfScaleSegments =
           totalDistanceInCurrentLargestUnit.floor() + 1;
