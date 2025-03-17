@@ -20,4 +20,32 @@ class ElevationPoint extends lg.LatLng {
         super(latitude, longitude);
 
   lg.LatLng get latLng => this;
+
+  ///Return true if the point has a parameter of the given type
+  bool hasParameterType(int parameterType) {
+    bool foundType = false;
+    this.parameters.forEach((element) {
+      if (element["type"] == parameterType) {
+        foundType = true;
+        return;
+      }
+    });
+    return foundType;
+  }
+
+  ///For a given parameter type, upgrade the sub_type value if the parameter is already present, or add it if it is not
+  bool addOrUpgradeParameter(int type, int subType) {
+    bool foundType = this.hasParameterType(type);
+    if (!foundType) {
+      this.parameters.add({"type": type, "sub_type": subType});
+    } else {
+      this.parameters.forEach((element) {
+        if (element["type"] == type) {
+          element["sub_type"] = subType;
+          return;
+        }
+      });
+    }
+    return true;
+  }
 }
