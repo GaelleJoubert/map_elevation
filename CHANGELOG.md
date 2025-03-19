@@ -5,12 +5,17 @@
 * **New Feature**  You can color the graph based on other parameter than just the elevation
 * `ElevationPoint` has a field `parameters` that can be used to store additional data
 * New parameter `parameterUsedToColor` to select the parameter used for coloring the graph
-* **New Feature**  You display a legend Widget
+* **New Feature**  You can display a legend Widget
 * **New Feature**  You can compute the percentage of the graph that is above a certain value (for elevation and other parameters)
-
+* **New Feature** New parameter `unit` to select the unit used to display the axis legend
+* **New Feature** New parameter `groupElevationPoints` to draw the graph for segmented elevation points (useful for example for a track with multiple segments)
+* **New Feature** New parameter `scaleColor`, `scaleTextStyle` and `dashedAltitudesColor` to custom the style
+* **New Feature** New parameter `totalDistance` to display a distance axis.
 * **Breaking:** 
 * the parameter `elevationGradientColors` is now a `parameterValuesAndColorsMap`
 * Bump Min sdk to 2.17.0
+
+
 
 
 ## 2.0.0

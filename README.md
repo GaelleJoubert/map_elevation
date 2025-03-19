@@ -27,11 +27,8 @@ NotificationListener<ElevationHoverNotification>(
     child: Elevation(
       getElevationPoints(),
       color: Colors.grey,
-      parameter: colorParameter.value,
-      elevationGradientColors: ElevationGradientColors(
-          gt10: Colors.green,
-          gt20: Colors.orangeAccent,
-          gt30: Colors.redAccent).toMap(),
+      parameterUsedToColor: colorParameter.value,
+      parameterValuesAndColorsMap: colorParameter.colorValueMap
     )
 )
 ```

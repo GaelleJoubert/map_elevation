@@ -1,10 +1,18 @@
 import 'elevation_point.dart';
 import 'package:latlong2/latlong.dart' as lg;
 
+/// Return the distribution of the values a parameter can take in a list of ElevationPoint, in the form of a Map with the percentage of each value
+/// {value1: percentage1, value2: percentage2, ...}
 Map<int, double> getParameterDistributionPercentage(
     {required List<ElevationPoint> points,
+
+    /// The value of the parameter. It's the value of the "type" field in the parameters list of the ElevationPoint
     required int parameter,
+
+    /// The values the parameter can take. It's the value of the "sub_type" field in the parameters list of the ElevationPoint
     required List<int> parameterValues,
+
+    /// If set to true, we only count the points that have the parameter. If set to false, we count all the points after a parameter is set, until we find another parameter
     bool singlePointsCounting = false}) {
   Map<int, double> distribution = {};
   //We assign the parameter values to the distribution map
@@ -40,6 +48,7 @@ Map<int, double> getParameterDistributionPercentage(
   return distribution;
 }
 
+/// Return the distribution of the values a parameter can take in a list of ElevationPoint, in the form of a List of String with the percentage of each value
 List<String> getParameterDistributionPercentageString(
     {required List<ElevationPoint> points,
     required int parameter,
@@ -58,6 +67,8 @@ List<String> getParameterDistributionPercentageString(
   return distributionString;
 }
 
+/// Return the distribution of the elevation gradient in a list of ElevationPoint, in the form of a Map with the percentage of each value
+/// {10: percentage1, 20: percentage2, 30: percentage3}
 Map<int, double> getElevationDistributionPercentage(
     {required List<ElevationPoint> points}) {
   Map<int, double> distribution = {};
@@ -90,6 +101,7 @@ Map<int, double> getElevationDistributionPercentage(
   return distribution;
 }
 
+/// Return the distribution of the elevation gradient in a list of ElevationPoint, in the form of a List of String with the percentage of each value
 List<String> getElevationDistributionPercentageString(
     {required List<ElevationPoint> points}) {
   Map<int, double> distribution =

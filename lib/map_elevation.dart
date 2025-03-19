@@ -253,15 +253,8 @@ class _ElevationPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..color = paintColor;
 
-    //in drawAltitude MArks
-    // final axisPaint = Paint()
-    //   ..strokeWidth = 2.0
-    //   ..strokeCap = StrokeCap.round
-    //   ..strokeJoin = StrokeJoin.round
-    //   ..blendMode = BlendMode.src
-    //   ..style = PaintingStyle.stroke;
     _drawAltitudeMarks(canvas, size);
-    canvas.saveLayer(rect, Paint()); //needed ? is bellow ?
+    canvas.saveLayer(rect, Paint());
 
     widthOffset = (size.width - lbPadding.dx) / _relativeAltitudes.length;
 
@@ -296,63 +289,8 @@ class _ElevationPainter extends CustomPainter {
             size.height - lbPadding.dy);
         path.close();
 
-        if (parametersColors != null && parameter == null) {
-          List<Color> gradientColors =
-              _calculateGradientColorsForGroup(group); //[paintColor];
-          // for (int i = 1; i < points.length; i++) {
-          //   double dX = lg.Distance().distance(points[i], points[i - 1]);
-          //   double dZ = (points[i].altitude - points[i - 1].altitude);
-          //
-          //   double gradient = 100 * dZ / dX;
-          //   if (gradient > 30) {
-          //     gradientColors.add(parametersColors![30]!);
-          //   } else if (gradient > 20) {
-          //     gradientColors.add(parametersColors![20]!);
-          //   } else if (gradient > 10) {
-          //     gradientColors.add(parametersColors![10]!);
-          //   } else {
-          //     gradientColors.add(paintColor);
-          //   }
-          // }
+        paint.shader = _createGradientShader(size, group);
 
-          paint.shader = ui.Gradient.linear(
-              Offset(currentIndex * widthOffset + lbPadding.dx, 0),
-              Offset((currentIndex + group.length) * widthOffset + lbPadding.dx,
-                  0),
-              gradientColors,
-              _calculateColorsStop(gradientColors));
-        }
-        //Painter when a parameter is used to color the graph
-        if (parametersColors != null && parameter != null) {
-          List<Color> gradientColors = [paintColor];
-          Color? colorTypeSet;
-          for (int i = 1; i < points.length; i++) {
-            // Check if the point has the wanted parameter type
-            if (points[i].parameters.isNotEmpty) {
-              for (int j = 0; j < points[i].parameters.length; j++) {
-                if (points[i].parameters[j]["type"] == parameter) {
-                  //we get the correct color according to the subtype
-                  gradientColors.add(
-                      parametersColors![points[i].parameters[j]["sub_type"]]!);
-                  //save color for the next points
-                  colorTypeSet =
-                      parametersColors![points[i].parameters[j]["sub_type"]];
-                } else {
-                  //If the type don't match the wanted parameter, we use the last color set
-                  gradientColors.add(colorTypeSet ?? paintColor);
-                }
-              }
-            } else {
-              //If the point has no type, we use the last color set (if it has been set
-              gradientColors.add(colorTypeSet ?? paintColor);
-            }
-          }
-          paint.shader = ui.Gradient.linear(
-              Offset(lbPadding.dx, 0),
-              Offset(size.width, 0),
-              gradientColors,
-              _calculateColorsStop(gradientColors));
-        }
         canvas.drawPath(path, paint);
         currentIndex += group.length;
       }
@@ -366,67 +304,11 @@ class _ElevationPainter extends CustomPainter {
       });
       path.lineTo(size.width, size.height - lbPadding.dy);
       path.lineTo(lbPadding.dx, size.height - lbPadding.dy);
-      //Painter when elevation is used to color the graph
-      if (parametersColors != null && parameter == null) {
-        List<Color> gradientColors = [paintColor];
 
-        for (int i = 1; i < points.length; i++) {
-          double dX = lg.Distance().distance(points[i], points[i - 1]);
-          double dZ = (points[i].altitude - points[i - 1].altitude);
+      paint.shader = _createGradientShader(size, points);
 
-          double gradient = 100 * dZ / dX;
-          if (gradient > 30) {
-            gradientColors.add(parametersColors![30]!);
-          } else if (gradient > 20) {
-            gradientColors.add(parametersColors![20]!);
-          } else if (gradient > 10) {
-            gradientColors.add(parametersColors![10]!);
-          } else {
-            gradientColors.add(paintColor);
-          }
-        }
-
-        paint.shader = ui.Gradient.linear(
-            Offset(lbPadding.dx, 0),
-            Offset(size.width, 0),
-            gradientColors,
-            _calculateColorsStop(gradientColors));
-      }
-
-      //Painter when a parameter is used to color the graph
-      if (parametersColors != null && parameter != null) {
-        List<Color> gradientColors = [paintColor];
-        Color? colorTypeSet;
-        for (int i = 1; i < points.length; i++) {
-          // Check if the point has the wanted parameter type
-          if (points[i].parameters.isNotEmpty) {
-            for (int j = 0; j < points[i].parameters.length; j++) {
-              if (points[i].parameters[j]["type"] == parameter) {
-                //we get the correct color according to the subtype
-                gradientColors.add(
-                    parametersColors![points[i].parameters[j]["sub_type"]]!);
-                //save color for the next points
-                colorTypeSet =
-                    parametersColors![points[i].parameters[j]["sub_type"]];
-              } else {
-                //If the type don't match the wanted parameter, we use the last color set
-                gradientColors.add(colorTypeSet ?? paintColor);
-              }
-            }
-          } else {
-            //If the point has no type, we use the last color set (if it has been set
-            gradientColors.add(colorTypeSet ?? paintColor);
-          }
-        }
-        paint.shader = ui.Gradient.linear(
-            Offset(lbPadding.dx, 0),
-            Offset(size.width, 0),
-            gradientColors,
-            _calculateColorsStop(gradientColors));
-      }
-      canvas.drawPath(path, paint); //needed ?
+      canvas.drawPath(path, paint);
     }
-    // canvas.saveLayer(rect, Paint());
 
     final scaleTextStyleOrDefault =
         scaleTextStyle ?? const TextStyle(color: Colors.black, fontSize: 10);
@@ -566,7 +448,29 @@ class _ElevationPainter extends CustomPainter {
         gradientColors.length, (index) => index * colorsStopInterval);
   }
 
-  List<Color> _calculateGradientColorsForGroup(
+  ui.Gradient? _createGradientShader(
+      Size size, List<ElevationPoint> groupPoints) {
+    List<Color> gradientColors = [];
+
+    //Painter when elevation is used to color the graph
+    if (parametersColors != null && parameter == null) {
+      gradientColors = _calculateGradientColorsForElevation(points);
+    }
+
+    //Painter when a parameter is used to color the graph
+    if (parametersColors != null && parameter != null) {
+      gradientColors = _calculateGradientColorsForParameter(points);
+    }
+
+    //Create the gradient
+    if (gradientColors.isNotEmpty) {
+      return ui.Gradient.linear(Offset(lbPadding.dx, 0), Offset(size.width, 0),
+          gradientColors, _calculateColorsStop(gradientColors));
+    }
+    return null;
+  }
+
+  List<Color> _calculateGradientColorsForElevation(
       List<ElevationPoint> groupPoints) {
     List<Color> gradientColors = [paintColor];
     for (int i = 1; i < groupPoints.length; i++) {
@@ -588,6 +492,33 @@ class _ElevationPainter extends CustomPainter {
         gradientColors.add(parametersColors![10]!);
       } else {
         gradientColors.add(paintColor);
+      }
+    }
+    return gradientColors;
+  }
+
+  _calculateGradientColorsForParameter(List<ElevationPoint> groupPoints) {
+    List<Color> gradientColors = [paintColor];
+    Color? colorTypeSet;
+    for (int i = 1; i < groupPoints.length; i++) {
+      // Check if the point has the wanted parameter type
+      if (groupPoints[i].parameters.isNotEmpty) {
+        for (int j = 0; j < groupPoints[i].parameters.length; j++) {
+          if (groupPoints[i].parameters[j]["type"] == parameter) {
+            //we get the correct color according to the subtype
+            gradientColors.add(
+                parametersColors![groupPoints[i].parameters[j]["sub_type"]]!);
+            //save color for the next points
+            colorTypeSet =
+                parametersColors![groupPoints[i].parameters[j]["sub_type"]];
+          } else {
+            //If the type don't match the wanted parameter, we use the last color set
+            gradientColors.add(colorTypeSet ?? paintColor);
+          }
+        }
+      } else {
+        //If the point has no type, we use the last color set (if it has been set
+        gradientColors.add(colorTypeSet ?? paintColor);
       }
     }
     return gradientColors;
