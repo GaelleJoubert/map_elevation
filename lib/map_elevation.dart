@@ -297,22 +297,24 @@ class _ElevationPainter extends CustomPainter {
         path.close();
 
         if (parametersColors != null && parameter == null) {
-          List<Color> gradientColors = [paintColor];
-          for (int i = 1; i < points.length; i++) {
-            double dX = lg.Distance().distance(points[i], points[i - 1]);
-            double dZ = (points[i].altitude - points[i - 1].altitude);
+          List<Color> gradientColors =
+              _calculateGradientColorsForGroup(group); //[paintColor];
+          // for (int i = 1; i < points.length; i++) {
+          //   double dX = lg.Distance().distance(points[i], points[i - 1]);
+          //   double dZ = (points[i].altitude - points[i - 1].altitude);
+          //
+          //   double gradient = 100 * dZ / dX;
+          //   if (gradient > 30) {
+          //     gradientColors.add(parametersColors![30]!);
+          //   } else if (gradient > 20) {
+          //     gradientColors.add(parametersColors![20]!);
+          //   } else if (gradient > 10) {
+          //     gradientColors.add(parametersColors![10]!);
+          //   } else {
+          //     gradientColors.add(paintColor);
+          //   }
+          // }
 
-            double gradient = 100 * dZ / dX;
-            if (gradient > 30) {
-              gradientColors.add(parametersColors![30]!);
-            } else if (gradient > 20) {
-              gradientColors.add(parametersColors![20]!);
-            } else if (gradient > 10) {
-              gradientColors.add(parametersColors![10]!);
-            } else {
-              gradientColors.add(paintColor);
-            }
-          }
           paint.shader = ui.Gradient.linear(
               Offset(currentIndex * widthOffset + lbPadding.dx, 0),
               Offset((currentIndex + group.length) * widthOffset + lbPadding.dx,
@@ -562,6 +564,33 @@ class _ElevationPainter extends CustomPainter {
     final colorsStopInterval = 1.0 / gradientColors.length;
     return List.generate(
         gradientColors.length, (index) => index * colorsStopInterval);
+  }
+
+  List<Color> _calculateGradientColorsForGroup(
+      List<ElevationPoint> groupPoints) {
+    List<Color> gradientColors = [paintColor];
+    for (int i = 1; i < groupPoints.length; i++) {
+      double dX =
+          (const lg.Distance().distance(groupPoints[i], groupPoints[i - 1]))
+                  .convertFromTo(LENGTH.meters, unit) ??
+              0;
+      double dZ =
+          ((groupPoints[i].altitude.convertFromTo(LENGTH.meters, unit) ?? 0) -
+              (groupPoints[i - 1].altitude.convertFromTo(LENGTH.meters, unit) ??
+                  0));
+
+      double gradient = 100 * dZ / dX;
+      if (gradient > 30) {
+        gradientColors.add(parametersColors![30]!);
+      } else if (gradient > 20) {
+        gradientColors.add(parametersColors![20]!);
+      } else if (gradient > 10) {
+        gradientColors.add(parametersColors![10]!);
+      } else {
+        gradientColors.add(paintColor);
+      }
+    }
+    return gradientColors;
   }
 }
 
