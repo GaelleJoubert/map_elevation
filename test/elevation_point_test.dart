@@ -1,6 +1,5 @@
 import 'package:map_elevation/elevation_point.dart';
 import 'package:test/test.dart';
-import 'package:latlong2/latlong.dart' as lg;
 
 void main() {
   group('ElevationPoint', () {
