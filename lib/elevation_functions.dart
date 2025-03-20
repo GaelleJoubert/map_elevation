@@ -98,13 +98,13 @@ Map<int, double> getElevationDistributionPercentage(
       distribution[15] = distribution[15]! + 1;
     }
     //handle lower than values (they will override "greater than" values)
-    else if (gradient < -5 && subtypes.contains(-5)) {
+    else if (gradient < 5 && subtypes.contains(-5)) {
       distribution[-5] = distribution[-5]! + 1;
-    } else if (gradient < -7 && subtypes.contains(-7)) {
+    } else if (gradient < 7 && subtypes.contains(-7)) {
       distribution[-7] = distribution[-7]! + 1;
-    } else if (gradient < -10 && subtypes.contains(-10)) {
+    } else if (gradient < 10 && subtypes.contains(-10)) {
       distribution[-10] = distribution[-10]! + 1;
-    } else if (gradient < -15 && subtypes.contains(-15)) {
+    } else if (gradient < 15 && subtypes.contains(-15)) {
       distribution[-15] = distribution[-15]! + 1;
     }
   }
@@ -138,20 +138,20 @@ List<String> getElevationDistributionPercentageString(
   List<String> distributionString = [];
 
   if (subtypes.contains(-5))
-    distributionString.add("${(distribution[-5]! * 100).toStringAsFixed(2)}%");
+    distributionString.add("${(distribution[-5]! * 100).toStringAsFixed(0)}%");
   if (subtypes.contains(-7))
-    distributionString.add("${(distribution[-7]! * 100).toStringAsFixed(2)}%");
+    distributionString.add("${(distribution[-7]! * 100).toStringAsFixed(0)}%");
   if (subtypes.contains(-10))
-    distributionString.add("${(distribution[-10]! * 100).toStringAsFixed(2)}%");
+    distributionString.add("${(distribution[-10]! * 100).toStringAsFixed(0)}%");
   if (subtypes.contains(-15))
-    distributionString.add("${(distribution[-15]! * 100).toStringAsFixed(2)}%");
+    distributionString.add("${(distribution[-15]! * 100).toStringAsFixed(0)}%");
   if (subtypes.contains(15))
-    distributionString.add("${(distribution[15]! * 100).toStringAsFixed(2)}%");
+    distributionString.add("${(distribution[15]! * 100).toStringAsFixed(0)}%");
   if (subtypes.contains(10))
-    distributionString.add("${(distribution[10]! * 100).toStringAsFixed(2)}%");
+    distributionString.add("${(distribution[10]! * 100).toStringAsFixed(0)}%");
   if (subtypes.contains(20))
-    distributionString.add("${(distribution[20]! * 100).toStringAsFixed(2)}%");
+    distributionString.add("${(distribution[20]! * 100).toStringAsFixed(0)}%");
   if (subtypes.contains(30))
-    distributionString.add("${(distribution[30]! * 100).toStringAsFixed(2)}%");
+    distributionString.add("${(distribution[30]! * 100).toStringAsFixed(0)}%");
   return distributionString;
 }
