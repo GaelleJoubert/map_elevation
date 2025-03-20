@@ -78,6 +78,7 @@ Map<int, double> getElevationDistributionPercentage(
   if (subtypes.contains(20)) distribution[20] = 0;
   if (subtypes.contains(30)) distribution[30] = 0;
   if (subtypes.contains(15)) distribution[15] = 0;
+  if (subtypes.contains(-15)) distribution[-15] = 0;
   if (subtypes.contains(-5)) distribution[-5] = 0;
   if (subtypes.contains(-7)) distribution[-7] = 0;
   if (subtypes.contains(-10)) distribution[-10] = 0;
@@ -148,9 +149,9 @@ List<String> getElevationDistributionPercentageString(
     distributionString.add("${(distribution[15]! * 100).toStringAsFixed(2)}%");
   if (subtypes.contains(10))
     distributionString.add("${(distribution[10]! * 100).toStringAsFixed(2)}%");
-  if (subtypes.contains(10))
+  if (subtypes.contains(20))
     distributionString.add("${(distribution[20]! * 100).toStringAsFixed(2)}%");
-  if (subtypes.contains(10))
+  if (subtypes.contains(30))
     distributionString.add("${(distribution[30]! * 100).toStringAsFixed(2)}%");
   return distributionString;
 }
