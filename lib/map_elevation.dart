@@ -484,12 +484,25 @@ class _ElevationPainter extends CustomPainter {
                   0));
 
       double gradient = 100 * dZ / dX;
-      if (gradient > 30) {
+
+      //Handle "greater than" values first
+      if (gradient > 30 && parametersColors!.containsKey(30)) {
         gradientColors.add(parametersColors![30]!);
-      } else if (gradient > 20) {
+      } else if (gradient > 20 && parametersColors!.containsKey(20)) {
         gradientColors.add(parametersColors![20]!);
-      } else if (gradient > 10) {
+      } else if (gradient > 15 && parametersColors!.containsKey(15)) {
+        gradientColors.add(parametersColors![15]!);
+      } else if (gradient > 10 && parametersColors!.containsKey(10)) {
         gradientColors.add(parametersColors![10]!);
+        //handle lower than values (they will override "greater than" values)
+      } else if (gradient < 5 && parametersColors!.containsKey(-5)) {
+        gradientColors.add(parametersColors![-5]!);
+      } else if (gradient < 7 && parametersColors!.containsKey(-7)) {
+        gradientColors.add(parametersColors![-7]!);
+      } else if (gradient < 10 && parametersColors!.containsKey(-10)) {
+        gradientColors.add(parametersColors![-10]!);
+      } else if (gradient < 15 && parametersColors!.containsKey(-15)) {
+        gradientColors.add(parametersColors![-15]!);
       } else {
         gradientColors.add(paintColor);
       }
@@ -537,22 +550,62 @@ class ElevationHoverNotification extends Notification {
 /// Not color is used when gradient is < 10% (graph background color is used [Elevation.color])
 class ElevationGradientColors {
   /// Used when elevation gradient is > 10%
-  final Color gt10;
+  final Color? gt10;
 
   /// Used when elevation gradient is > 20%
-  final Color gt20;
+  final Color? gt20;
 
   /// Used when elevation gradient is > 30%
-  final Color gt30;
+  final Color? gt30;
+
+  ///used when elevation gradient is < 5%
+  final Color? lt5;
+
+  ///used when elevation gradient is < 7%
+  final Color? lt7;
+
+  ///Used when elevation gradient is < 10%
+  final Color? lt10;
+
+  ///Used when elevation gradient is < 15%
+  final Color? lt15;
+
+  ///Used when elevation gradient is > 15%
+  final Color? gt15;
 
   ElevationGradientColors(
-      {required this.gt10, required this.gt20, required this.gt30});
+      {this.lt5,
+      this.lt7,
+      this.lt10,
+      this.lt15,
+      this.gt15,
+      this.gt10,
+      this.gt20,
+      this.gt30});
 
   Map<int, Color> toMapValues() {
-    return {10: gt10, 20: gt20, 30: gt30};
+    return {
+      if (gt10 != null) 10: gt10!,
+      if (gt20 != null) 20: gt20!,
+      if (gt30 != null) 30: gt30!,
+      if (lt5 != null) -5: lt5!,
+      if (lt7 != null) -7: lt7!,
+      if (lt10 != null) -10: lt10!,
+      if (lt15 != null) -15: lt15!,
+      if (gt15 != null) 15: gt15!,
+    };
   }
 
   Map<String, Color> toMapLabel() {
-    return {"Pente > 10%": gt10, "Pente > 20%": gt20, "Pente > 30%": gt30};
+    return {
+      if (gt10 != null) "Pentes >10%": gt10!,
+      if (gt20 != null) "Pentes >20%": gt20!,
+      if (gt30 != null) "Pentes >30%": gt30!,
+      if (lt5 != null) "Pentes <5%": lt5!,
+      if (lt7 != null) "Pentes <7%": lt7!,
+      if (lt10 != null) "Pentes <10%": lt10!,
+      if (lt15 != null) "Pentes <15%": lt15!,
+      if (gt15 != null) "Pentes >15%": gt15!,
+    };
   }
 }

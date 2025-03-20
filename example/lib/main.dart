@@ -29,7 +29,7 @@ enum ParameterItems {
   List<int> get subTypes {
     switch (this) {
       case ParameterItems.elevation:
-        return [10, 20, 30];
+        return [-5, -7, -10, -15, 15];
       case ParameterItems.feetPose:
         return [0, 1, 2, 3, 4];
 
@@ -42,9 +42,15 @@ enum ParameterItems {
     switch (this) {
       case ParameterItems.elevation:
         return ElevationGradientColors(
-                gt10: Colors.green,
-                gt20: Colors.orangeAccent,
-                gt30: Colors.redAccent)
+                lt5: Colors.yellow,
+                lt7: Colors.orangeAccent,
+                lt10: Colors.deepOrangeAccent,
+                lt15: Colors.red,
+                gt15: Colors.brown
+                // gt10: Colors.green,
+                // gt20: Colors.orangeAccent,
+                // gt30: Colors.redAccent
+                )
             .toMapValues();
       case ParameterItems.feetPose:
         return {
@@ -69,9 +75,15 @@ enum ParameterItems {
     switch (this) {
       case ParameterItems.elevation:
         return ElevationGradientColors(
-                gt10: Colors.green,
-                gt20: Colors.orangeAccent,
-                gt30: Colors.redAccent)
+                lt5: Colors.yellow,
+                lt7: Colors.orangeAccent,
+                lt10: Colors.deepOrangeAccent,
+                lt15: Colors.red,
+                gt15: Colors.brown
+                // gt10: Colors.green,
+                // gt20: Colors.orangeAccent,
+                // gt30: Colors.redAccent
+                )
             .toMapLabel();
       case ParameterItems.feetPose:
         return {
@@ -251,7 +263,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevationLegend(
                   columns: 2,
                   parameterLabelAndColorsMap: colorParameter.colorLabelMap,
-                  secondLegendTextList: secondLegendList,
+                  secondLegendTextList: [], //secondLegendList,
                 )
               ],
             ),
