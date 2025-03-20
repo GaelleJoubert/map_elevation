@@ -70,45 +70,87 @@ List<String> getParameterDistributionPercentageString(
 /// Return the distribution of the elevation gradient in a list of ElevationPoint, in the form of a Map with the percentage of each value
 /// {10: percentage1, 20: percentage2, 30: percentage3}
 Map<int, double> getElevationDistributionPercentage(
-    {required List<ElevationPoint> points}) {
+    {required List<ElevationPoint> points, required List<int> subtypes}) {
   Map<int, double> distribution = {};
 
   //We assign the parameter values to the distribution map
-  distribution[10] = 0;
-  distribution[20] = 0;
-  distribution[30] = 0;
+  if (subtypes.contains(10)) distribution[10] = 0;
+  if (subtypes.contains(20)) distribution[20] = 0;
+  if (subtypes.contains(30)) distribution[30] = 0;
+  if (subtypes.contains(15)) distribution[15] = 0;
+  if (subtypes.contains(-5)) distribution[-5] = 0;
+  if (subtypes.contains(-7)) distribution[-7] = 0;
+  if (subtypes.contains(-10)) distribution[-10] = 0;
 
   //We fill the distribution map
   for (int i = 1; i < points.length; i++) {
     double dX = lg.Distance().distance(points[i], points[i - 1]);
     double dZ = (points[i].altitude - points[i - 1].altitude);
     double gradient = 100 * dZ / dX;
-    if (gradient > 30) {
+
+    //Handle "greater than" values first
+    if (gradient > 30 && subtypes.contains(30)) {
       distribution[30] = distribution[30]! + 1;
-    } else if (gradient > 20) {
+    } else if (gradient > 20 && subtypes.contains(20)) {
       distribution[20] = distribution[20]! + 1;
-    } else if (gradient > 10) {
-      distribution[10] = distribution[10]! + 1;
+    } else if (gradient > 15 && subtypes.contains(15)) {
+      distribution[15] = distribution[15]! + 1;
+    }
+    //handle lower than values (they will override "greater than" values)
+    else if (gradient < -5 && subtypes.contains(-5)) {
+      distribution[-5] = distribution[-5]! + 1;
+    } else if (gradient < -7 && subtypes.contains(-7)) {
+      distribution[-7] = distribution[-7]! + 1;
+    } else if (gradient < -10 && subtypes.contains(-10)) {
+      distribution[-10] = distribution[-10]! + 1;
+    } else if (gradient < -15 && subtypes.contains(-15)) {
+      distribution[-15] = distribution[-15]! + 1;
     }
   }
-
   //We calculate the percentage
 
-  distribution[10] = distribution[10]! / points.length;
-  distribution[20] = distribution[20]! / points.length;
-  distribution[30] = distribution[30]! / points.length;
+  if (subtypes.contains(10))
+    distribution[10] = distribution[10]! / points.length;
+  if (subtypes.contains(20))
+    distribution[20] = distribution[20]! / points.length;
+  if (subtypes.contains(30))
+    distribution[30] = distribution[30]! / points.length;
+  if (subtypes.contains(15))
+    distribution[15] = distribution[15]! / points.length;
+  if (subtypes.contains(-5))
+    distribution[-5] = distribution[-5]! / points.length;
+  if (subtypes.contains(-7))
+    distribution[-7] = distribution[-7]! / points.length;
+  if (subtypes.contains(-10))
+    distribution[-10] = distribution[-10]! / points.length;
+  if (subtypes.contains(-15))
+    distribution[-15] = distribution[-15]! / points.length;
 
   return distribution;
 }
 
 /// Return the distribution of the elevation gradient in a list of ElevationPoint, in the form of a List of String with the percentage of each value
 List<String> getElevationDistributionPercentageString(
-    {required List<ElevationPoint> points}) {
+    {required List<ElevationPoint> points, required List<int> subtypes}) {
   Map<int, double> distribution =
-      getElevationDistributionPercentage(points: points);
+      getElevationDistributionPercentage(points: points, subtypes: subtypes);
   List<String> distributionString = [];
-  distributionString.add("${(distribution[10]! * 100).toStringAsFixed(2)}%");
-  distributionString.add("${(distribution[20]! * 100).toStringAsFixed(2)}%");
-  distributionString.add("${(distribution[30]! * 100).toStringAsFixed(2)}%");
+
+  if (subtypes.contains(-5))
+    distributionString.add("${(distribution[-5]! * 100).toStringAsFixed(2)}%");
+  if (subtypes.contains(-7))
+    distributionString.add("${(distribution[-7]! * 100).toStringAsFixed(2)}%");
+  if (subtypes.contains(-10))
+    distributionString.add("${(distribution[-10]! * 100).toStringAsFixed(2)}%");
+  if (subtypes.contains(-15))
+    distributionString.add("${(distribution[-15]! * 100).toStringAsFixed(2)}%");
+  if (subtypes.contains(15))
+    distributionString.add("${(distribution[15]! * 100).toStringAsFixed(2)}%");
+  if (subtypes.contains(10))
+    distributionString.add("${(distribution[10]! * 100).toStringAsFixed(2)}%");
+  if (subtypes.contains(10))
+    distributionString.add("${(distribution[20]! * 100).toStringAsFixed(2)}%");
+  if (subtypes.contains(10))
+    distributionString.add("${(distribution[30]! * 100).toStringAsFixed(2)}%");
   return distributionString;
 }
