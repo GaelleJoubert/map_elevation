@@ -464,8 +464,17 @@ class _ElevationPainter extends CustomPainter {
 
     //Create the gradient
     if (gradientColors.isNotEmpty) {
+      int n = gradientColors.length;
+      List<Color> discreteColors = [];
+      List<double> stops = [];
+      for (int i = 0; i < n; i++) {
+        discreteColors.add(gradientColors[i]);
+        discreteColors.add(gradientColors[i]);
+        stops.add(i / n);
+        stops.add((i + 1) / n);
+      }
       return ui.Gradient.linear(Offset(lbPadding.dx, 0), Offset(size.width, 0),
-          gradientColors, _calculateColorsStop(gradientColors));
+          discreteColors, stops);
     }
     return null;
   }

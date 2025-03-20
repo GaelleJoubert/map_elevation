@@ -11,6 +11,7 @@
 * **New Feature** New parameter `groupElevationPoints` to draw the graph for segmented elevation points (useful for example for a track with multiple segments)
 * **New Feature** New parameter `scaleColor`, `scaleTextStyle` and `dashedAltitudesColor` to custom the style
 * **New Feature** New parameter `totalDistance` to display a distance axis.
+* Get rid of The gradient between colors. The change is now sharp.
 * **Breaking:** 
 * the parameter `elevationGradientColors` is now a `parameterValuesAndColorsMap`
 * Bump Min sdk to 2.17.0
